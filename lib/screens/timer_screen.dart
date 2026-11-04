@@ -43,7 +43,7 @@ class TimerScreen extends StatelessWidget {
                   _Controls(timer: timer),
                   const Padding(
                     padding: EdgeInsets.fromLTRB(16, 24, 16, 0),
-                    child: _TodayCard(),
+                    child: _Today(),
                   ),
                 ],
               ),
@@ -449,8 +449,9 @@ class _PlayButtonState extends State<_PlayButton>
   }
 }
 
-class _TodayCard extends StatelessWidget {
-  const _TodayCard();
+/// Today's progress, laid flat on the surface under the timer.
+class _Today extends StatelessWidget {
+  const _Today();
 
   @override
   Widget build(BuildContext context) {
@@ -464,68 +465,51 @@ class _TodayCard extends StatelessWidget {
     final streak = store.currentStreak;
     final remaining = goal - words;
 
-    return Card.filled(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Divider(height: 1),
+        const SizedBox(height: 16),
+        MetricRow(
           children: [
-            Row(
-              children: [
-                Text('Today', style: t.titleMedium),
-                if (streak > 0) ...[
-                  const SizedBox(width: 12),
-                  Icon(
-                    Icons.local_fire_department_outlined,
-                    size: 18,
-                    color: cs.primary,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '$streak-day streak',
-                    style: t.labelLarge?.copyWith(color: cs.primary),
-                  ),
-                ],
-                const Spacer(),
-                if (secs > 0)
-                  Text(
-                    fmtDuration(secs),
-                    style: t.labelLarge?.copyWith(color: cs.onSurfaceVariant),
-                  ),
-              ],
+            Metric(
+              value: AnimatedCount(words),
+              label: 'of ${fmtInt(goal)} words',
             ),
-            const SizedBox(height: 8),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
-              children: [
-                AnimatedCount(words, style: t.headlineMedium),
-                Text(
-                  '  of ${fmtInt(goal)} words',
-                  style: t.bodyLarge?.copyWith(color: cs.onSurfaceVariant),
-                ),
-                const Spacer(),
-                TextButton.icon(
-                  onPressed: () => showLogWordsSheet(context),
-                  icon: const Icon(Icons.add),
-                  label: const Text('Log'),
-                ),
-              ],
+            Metric(
+              icon: Icons.local_fire_department_outlined,
+              value: Text('$streak'),
+              label: 'day streak',
             ),
-            const SizedBox(height: 8),
-            WarmProgress(value: goal == 0 ? 0 : words / goal),
-            const SizedBox(height: 8),
-            Text(
-              words == 0
-                  ? 'A blank page is just a beginning.'
-                  : remaining > 0
-                  ? '${fmtInt(remaining)} words to go.'
-                  : 'Goal met. Anything more is a bonus.',
-              style: t.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+            Metric(
+              icon: Icons.schedule,
+              value: Text(fmtDuration(secs)),
+              label: 'writing today',
             ),
           ],
         ),
-      ),
+        const SizedBox(height: 16),
+        WarmProgress(value: goal == 0 ? 0 : words / goal),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                words == 0
+                    ? 'A blank page is just a beginning.'
+                    : remaining > 0
+                    ? '${fmtInt(remaining)} words to go.'
+                    : 'Goal met. Anything more is a bonus.',
+                style: t.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+              ),
+            ),
+            TextButton.icon(
+              onPressed: () => showLogWordsSheet(context),
+              icon: const Icon(Icons.add),
+              label: const Text('Log words'),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

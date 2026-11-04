@@ -271,77 +271,75 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
               children: [
                 _GoalRow(store: store, onEdit: () => _editGoal(store)),
                 const SizedBox(height: 16),
-                Card.outlined(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 16),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            IconButton(
-                              tooltip: 'Previous month',
-                              onPressed: _visible > 0
-                                  ? () => _go(_visible - 1)
-                                  : null,
-                              icon: const Icon(Icons.chevron_left),
-                            ),
-                            Expanded(
-                              child: AnimatedSwitcher(
-                                duration: Motion.of(context, Motion.medium),
-                                child: Text(
-                                  DateFormat.yMMMM().format(_month),
-                                  key: ValueKey(_visible),
-                                  textAlign: TextAlign.center,
-                                  style: t.titleMedium,
-                                ),
+                const Divider(height: 1),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 8, 0, 16),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          IconButton(
+                            tooltip: 'Previous month',
+                            onPressed: _visible > 0
+                                ? () => _go(_visible - 1)
+                                : null,
+                            icon: const Icon(Icons.chevron_left),
+                          ),
+                          Expanded(
+                            child: AnimatedSwitcher(
+                              duration: Motion.of(context, Motion.medium),
+                              child: Text(
+                                DateFormat.yMMMM().format(_month),
+                                key: ValueKey(_visible),
+                                textAlign: TextAlign.center,
+                                style: t.titleMedium,
                               ),
                             ),
-                            IconButton(
-                              tooltip: 'Next month',
-                              onPressed: _visible < _current
-                                  ? () => _go(_visible + 1)
-                                  : null,
-                              icon: const Icon(Icons.chevron_right),
+                          ),
+                          IconButton(
+                            tooltip: 'Next month',
+                            onPressed: _visible < _current
+                                ? () => _go(_visible + 1)
+                                : null,
+                            icon: const Icon(Icons.chevron_right),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Column(
+                          children: [
+                            const _WeekdayHeader(),
+                            const SizedBox(height: 8),
+                            LayoutBuilder(
+                              builder: (context, box) {
+                                const gap = 4.0;
+                                final cell = (box.maxWidth - gap * 6) / 7;
+                                return SizedBox(
+                                  height: cell * 6 + gap * 5,
+                                  child: PageView.builder(
+                                    controller: _pages,
+                                    itemCount: _current + 1,
+                                    onPageChanged: (i) =>
+                                        setState(() => _visible = i),
+                                    itemBuilder: (_, i) => _MonthGrid(
+                                      month: _monthAt(i),
+                                      cell: cell,
+                                      gap: gap,
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
+                            const SizedBox(height: 16),
+                            const _Legend(),
                           ],
                         ),
-                        const SizedBox(height: 8),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: Column(
-                            children: [
-                              const _WeekdayHeader(),
-                              const SizedBox(height: 8),
-                              LayoutBuilder(
-                                builder: (context, box) {
-                                  const gap = 4.0;
-                                  final cell = (box.maxWidth - gap * 6) / 7;
-                                  return SizedBox(
-                                    height: cell * 6 + gap * 5,
-                                    child: PageView.builder(
-                                      controller: _pages,
-                                      itemCount: _current + 1,
-                                      onPageChanged: (i) =>
-                                          setState(() => _visible = i),
-                                      itemBuilder: (_, i) => _MonthGrid(
-                                        month: _monthAt(i),
-                                        cell: cell,
-                                        gap: gap,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 16),
-                              const _Legend(),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 16),
                 _MonthSummary(store: store, month: _month),
                 const SizedBox(height: 16),
                 Text(
@@ -366,94 +364,24 @@ class _GoalRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = Theme.of(context).textTheme;
-    final cs = Theme.of(context).colorScheme;
     final streak = store.currentStreak;
     final best = store.bestStreak;
-
-    Widget header(IconData icon, String label, {Widget? trailing}) => Row(
+    return MetricRow(
       children: [
-        Icon(icon, size: 20, color: cs.primary),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            label,
-            style: t.labelLarge?.copyWith(color: cs.onSurfaceVariant),
-          ),
+        Metric(
+          icon: Icons.local_fire_department_outlined,
+          value: AnimatedCount(streak, suffix: streak == 1 ? ' day' : ' days'),
+          label: streak == 0
+              ? 'streak · best $best, write today to start'
+              : 'streak · best $best',
         ),
-        ?trailing,
+        Metric(
+          icon: Icons.edit_outlined,
+          value: AnimatedCount(store.currentGoal),
+          label: 'words a day',
+          onTap: onEdit,
+        ),
       ],
-    );
-
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: Card.filled(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    header(Icons.local_fire_department_outlined, 'Streak'),
-                    const SizedBox(height: 12),
-                    AnimatedCount(
-                      streak,
-                      suffix: streak == 1 ? ' day' : ' days',
-                      style: t.headlineSmall,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      streak == 0 && best > 0
-                          ? 'Best $best. Write today to start again'
-                          : streak == 0
-                          ? 'Write today to start'
-                          : 'Best $best',
-                      style: t.bodySmall?.copyWith(color: cs.onSurfaceVariant),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Card.filled(
-              clipBehavior: Clip.antiAlias,
-              child: InkWell(
-                onTap: onEdit,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      header(
-                        Icons.flag_outlined,
-                        'Daily goal',
-                        trailing: Icon(
-                          Icons.edit_outlined,
-                          size: 18,
-                          color: cs.onSurfaceVariant,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      AnimatedCount(store.currentGoal, style: t.headlineSmall),
-                      const SizedBox(height: 4),
-                      Text(
-                        'words a day',
-                        style: t.bodySmall?.copyWith(
-                          color: cs.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -675,8 +603,6 @@ class _MonthSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = Theme.of(context).textTheme;
-    final cs = Theme.of(context).colorScheme;
     var words = 0, met = 0, counted = 0, writing = 0, best = 0, secs = 0;
     for (var d = 1; d <= daysInMonth(month); d++) {
       final day = DateTime(month.year, month.month, d);
@@ -690,39 +616,33 @@ class _MonthSummary extends StatelessWidget {
       counted++;
       if (store.goalMetOn(day)) met++;
     }
-    Widget stat(String label, Widget value) => Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DefaultTextStyle.merge(style: t.titleLarge, child: value),
-          const SizedBox(height: 4),
-          Text(label, style: t.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
-        ],
-      ),
-    );
-    return SectionCard(
+    return Section(
       title: DateFormat.MMMM().format(month),
       subtitle: counted == 0
           ? 'Nothing counted yet'
           : 'Goal met on $met of $counted days',
       child: Column(
         children: [
-          Row(
+          MetricRow(
             children: [
-              stat('Words', AnimatedCount(words, format: fmtCompact)),
-              stat('Writing time', Text(fmtDuration(secs))),
+              Metric(
+                value: AnimatedCount(words, format: fmtCompact),
+                label: 'words',
+              ),
+              Metric(value: Text(fmtDuration(secs)), label: 'writing time'),
+            ],
+          ),
+          const SizedBox(height: 24),
+          MetricRow(
+            children: [
+              Metric(
+                value: AnimatedCount(writing == 0 ? 0 : words ~/ writing),
+                label: 'daily average',
+              ),
+              Metric(value: AnimatedCount(best), label: 'best day'),
             ],
           ),
           const SizedBox(height: 16),
-          Row(
-            children: [
-              stat(
-                'Avg on writing days',
-                AnimatedCount(writing == 0 ? 0 : words ~/ writing),
-              ),
-              stat('Best day', AnimatedCount(best)),
-            ],
-          ),
         ],
       ),
     );

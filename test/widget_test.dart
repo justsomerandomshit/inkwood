@@ -65,7 +65,7 @@ void main() {
       await tester.tap(find.text('Goal'));
       await tester.pump(const Duration(seconds: 1));
       expect(find.text('Word goal'), findsWidgets);
-      expect(find.text('Daily goal'), findsOneWidget);
+      expect(find.text('words a day'), findsOneWidget);
 
       await tester.tap(find.text('Stats'));
       await tester.pump(const Duration(seconds: 2));

@@ -36,63 +36,140 @@ class AnimatedCount extends StatelessWidget {
   }
 }
 
-/// A filled M3 card with an optional section header (Title Medium) and
-/// supporting text (Body Medium, onSurfaceVariant).
-class SectionCard extends StatelessWidget {
-  const SectionCard({
+/// A page section drawn straight on the surface (no card): a full-width
+/// divider, a Title Medium header with optional supporting text, then the
+/// content.
+class Section extends StatelessWidget {
+  const Section({
     super.key,
     this.title,
     this.subtitle,
     this.trailing,
+    this.divider = true,
     required this.child,
   });
 
   final String? title;
   final String? subtitle;
   final Widget? trailing;
+  final bool divider;
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
     final cs = Theme.of(context).colorScheme;
-    return Card.filled(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (title != null) ...[
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(title!, style: t.titleMedium),
-                        if (subtitle != null) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            subtitle!,
-                            style: t.bodyMedium?.copyWith(
-                              color: cs.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  if (trailing != null) ...[
-                    const SizedBox(width: 8),
-                    trailing!,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (divider) const Divider(height: 1),
+        SizedBox(height: divider ? 20 : 0),
+        if (title != null) ...[
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title!, style: t.titleMedium),
+                    if (subtitle != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle!,
+                        style: t.bodyMedium?.copyWith(
+                          color: cs.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-              const SizedBox(height: 16),
+              if (trailing != null) ...[const SizedBox(width: 8), trailing!],
             ],
-            child,
+          ),
+          const SizedBox(height: 16),
+        ],
+        child,
+        const SizedBox(height: 4),
+      ],
+    );
+  }
+}
+
+/// One figure with a short label under it.
+class Metric extends StatelessWidget {
+  const Metric({
+    super.key,
+    required this.value,
+    required this.label,
+    this.icon,
+    this.onTap,
+  });
+
+  final Widget value;
+  final String label;
+  final IconData? icon;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final cs = Theme.of(context).colorScheme;
+    final body = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        DefaultTextStyle.merge(
+          style: t.headlineSmall,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          child: value,
+        ),
+        const SizedBox(height: 4),
+        Row(
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 16, color: cs.primary),
+              const SizedBox(width: 4),
+            ],
+            Flexible(
+              child: Text(
+                label,
+                style: t.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
+      ],
+    );
+    if (onTap == null) return body;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: body,
+    );
+  }
+}
+
+/// Figures side by side, split by thin vertical dividers.
+class MetricRow extends StatelessWidget {
+  const MetricRow({super.key, required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (var i = 0; i < children.length; i++) ...[
+            if (i > 0) const VerticalDivider(width: 32),
+            Expanded(child: children[i]),
+          ],
+        ],
       ),
     );
   }
@@ -159,62 +236,6 @@ class _FadeSlideInState extends State<FadeSlideIn>
         ),
       ),
       child: widget.child,
-    );
-  }
-}
-
-/// Outlined M3 card showing one key figure.
-class StatTile extends StatelessWidget {
-  const StatTile({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.value,
-    this.footnote,
-  });
-
-  final IconData icon;
-  final String label;
-  final Widget value;
-  final String? footnote;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = Theme.of(context).textTheme;
-    final cs = Theme.of(context).colorScheme;
-    return Card.outlined(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, size: 20, color: cs.primary),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    label,
-                    style: t.labelLarge?.copyWith(color: cs.onSurfaceVariant),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            DefaultTextStyle.merge(style: t.headlineSmall, child: value),
-            if (footnote != null) ...[
-              const SizedBox(height: 4),
-              Text(
-                footnote!,
-                style: t.bodySmall?.copyWith(color: cs.onSurfaceVariant),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ],
-        ),
-      ),
     );
   }
 }

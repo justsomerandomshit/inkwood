@@ -80,12 +80,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     key: ValueKey(_range),
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      stagger(_HeroCard(stats: st, store: store)),
-                      const SizedBox(height: 16),
-                      stagger(_Tiles(stats: st, store: store)),
-                      const SizedBox(height: 16),
+                      stagger(_Hero(stats: st, store: store)),
+                      stagger(_Habits(stats: st, store: store)),
                       stagger(
-                        SectionCard(
+                        Section(
                           title: st.daily ? 'Words per day' : 'Words per month',
                           subtitle: st.daily
                               ? 'Goal met on ${st.goalMetDays} of ${st.countedDays} days. Dashed line: ${fmtInt(store.currentGoal)} goal'
@@ -94,9 +92,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         ),
                       ),
                       if (_range != StatsRange.week && st.writingDays >= 2) ...[
-                        const SizedBox(height: 16),
                         stagger(
-                          SectionCard(
+                          Section(
                             title: 'Running total',
                             subtitle:
                                 _range == StatsRange.month && projection != null
@@ -107,9 +104,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         ),
                       ],
                       if (st.showRhythm) ...[
-                        const SizedBox(height: 16),
                         stagger(
-                          SectionCard(
+                          Section(
                             title: 'When you write',
                             subtitle: _rhythmCaption(st),
                             trailing: SegmentedButton<bool>(
@@ -136,9 +132,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         ),
                       ],
                       if (st.comparableKinds.isNotEmpty) ...[
-                        const SizedBox(height: 16),
                         stagger(
-                          SectionCard(
+                          Section(
                             title: 'Pace by timer',
                             subtitle:
                                 '${st.comparableKinds.first.kind.label} is your fastest: ${fmtCompact(st.comparableKinds.first.pace)} words/hour',
@@ -146,11 +141,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                           ),
                         ),
                       ],
-                      const SizedBox(height: 16),
-                      stagger(_BestsCard(bests: bests)),
-                      const SizedBox(height: 16),
+                      stagger(_Bests(bests: bests)),
                       stagger(
-                        SectionCard(
+                        Section(
                           title: 'Recent sessions',
                           subtitle: 'Tap to edit · swipe to remove',
                           child: Column(
@@ -198,8 +191,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   }
 }
 
-class _HeroCard extends StatelessWidget {
-  const _HeroCard({required this.stats, required this.store});
+/// The headline figure for the range, with supporting numbers in a strip.
+class _Hero extends StatelessWidget {
+  const _Hero({required this.stats, required this.store});
   final RangeStats stats;
   final WritingStore store;
 
@@ -208,8 +202,6 @@ class _HeroCard extends StatelessWidget {
     final t = Theme.of(context).textTheme;
     final cs = Theme.of(context).colorScheme;
     final change = stats.change;
-    final total = store.totalWords;
-    final pages = (total / 250).round();
     String? delta;
     IconData? deltaIcon;
     if (stats.range != StatsRange.all) {
@@ -221,7 +213,7 @@ class _HeroCard extends StatelessWidget {
       };
       if (change == null) {
         delta = prev == 0 && stats.words > 0
-            ? 'New! Nothing to compare yet'
+            ? 'New! Nothing to compare with yet'
             : null;
       } else if (change >= 0) {
         deltaIcon = Icons.arrow_upward;
@@ -232,75 +224,69 @@ class _HeroCard extends StatelessWidget {
       }
     }
 
-    return Card(
-      color: cs.primaryContainer,
-      elevation: 0,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          stats.range.caption,
+          style: t.labelLarge?.copyWith(color: cs.onSurfaceVariant),
+        ),
+        const SizedBox(height: 4),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
           children: [
+            AnimatedCount(stats.words, style: t.displayMedium),
+            const SizedBox(width: 8),
             Text(
-              stats.range.caption,
-              style: t.labelLarge?.copyWith(color: cs.onPrimaryContainer),
-            ),
-            const SizedBox(height: 4),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
-              children: [
-                AnimatedCount(
-                  stats.words,
-                  style: t.displayMedium?.copyWith(
-                    color: cs.onPrimaryContainer,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'words',
-                  style: t.titleLarge?.copyWith(color: cs.onPrimaryContainer),
-                ),
-              ],
-            ),
-            if (delta != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Row(
-                  children: [
-                    if (deltaIcon != null) ...[
-                      Icon(deltaIcon, size: 18, color: cs.onPrimaryContainer),
-                      const SizedBox(width: 4),
-                    ],
-                    Expanded(
-                      child: Text(
-                        delta,
-                        style: t.titleSmall?.copyWith(
-                          color: cs.onPrimaryContainer,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            const SizedBox(height: 16),
-            Text(
-              '${fmtCompact(stats.avgOnWritingDays)} avg on writing days · '
-              '${stats.writingDays} writing ${stats.writingDays == 1 ? 'day' : 'days'}',
-              style: t.bodyMedium?.copyWith(color: cs.onPrimaryContainer),
-            ),
-            Text(
-              '${fmtCompact(total)} words all-time · about ${fmtInt(pages)} ${pages == 1 ? 'page' : 'pages'}',
-              style: t.bodyMedium?.copyWith(color: cs.onPrimaryContainer),
+              'words',
+              style: t.titleLarge?.copyWith(color: cs.onSurfaceVariant),
             ),
           ],
         ),
-      ),
+        if (delta != null) ...[
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              if (deltaIcon != null) ...[
+                Icon(deltaIcon, size: 18, color: cs.primary),
+                const SizedBox(width: 4),
+              ],
+              Expanded(
+                child: Text(
+                  delta,
+                  style: t.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+                ),
+              ),
+            ],
+          ),
+        ],
+        const SizedBox(height: 24),
+        MetricRow(
+          children: [
+            Metric(
+              value: AnimatedCount(stats.avgOnWritingDays, format: fmtCompact),
+              label: 'daily average',
+            ),
+            Metric(
+              value: AnimatedCount(stats.writingDays),
+              label: stats.writingDays == 1 ? 'writing day' : 'writing days',
+            ),
+            Metric(
+              value: AnimatedCount(store.totalWords, format: fmtCompact),
+              label: 'words all-time',
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 }
 
-class _Tiles extends StatelessWidget {
-  const _Tiles({required this.stats, required this.store});
+/// Streak, time, pace and session size.
+class _Habits extends StatelessWidget {
+  const _Habits({required this.stats, required this.store});
   final RangeStats stats;
   final WritingStore store;
 
@@ -308,56 +294,57 @@ class _Tiles extends StatelessWidget {
   Widget build(BuildContext context) {
     final streak = store.currentStreak;
     final best = store.bestStreak;
-    final tiles = [
-      StatTile(
-        icon: Icons.local_fire_department_outlined,
-        label: 'Streak',
-        value: Text(
-          streak == 0 ? '—' : '$streak ${streak == 1 ? 'day' : 'days'}',
-        ),
-        footnote: streak == 0
-            ? 'Best $best · write today to start'
-            : 'Best $best',
+    return Section(
+      title: 'Habits',
+      child: Column(
+        children: [
+          MetricRow(
+            children: [
+              Metric(
+                icon: Icons.local_fire_department_outlined,
+                value: Text(
+                  streak == 0 ? '—' : '$streak ${streak == 1 ? 'day' : 'days'}',
+                ),
+                label: streak == 0
+                    ? 'streak · best $best, write today'
+                    : 'streak · best $best',
+              ),
+              Metric(
+                icon: Icons.schedule,
+                value: Text(fmtDuration(stats.seconds)),
+                label:
+                    'writing · ${stats.entries} ${stats.entries == 1 ? 'session' : 'sessions'}',
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          MetricRow(
+            children: [
+              Metric(
+                icon: Icons.speed,
+                value: stats.pace == null
+                    ? const Text('—')
+                    : AnimatedCount(stats.pace!, suffix: ' w/h'),
+                label: 'pace, timed sessions',
+              ),
+              Metric(
+                icon: Icons.notes,
+                value: stats.medianSession == null
+                    ? const Text('—')
+                    : AnimatedCount(stats.medianSession!),
+                label: 'typical words per session',
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+        ],
       ),
-      StatTile(
-        icon: Icons.schedule,
-        label: 'Time writing',
-        value: Text(fmtDuration(stats.seconds)),
-        footnote:
-            '${stats.entries} ${stats.entries == 1 ? 'session' : 'sessions'}',
-      ),
-      StatTile(
-        icon: Icons.speed,
-        label: 'Pace',
-        value: stats.pace == null
-            ? const Text('—')
-            : AnimatedCount(stats.pace!, suffix: ' w/h'),
-        footnote: 'words per hour, timed sessions',
-      ),
-      StatTile(
-        icon: Icons.notes,
-        label: 'Per session',
-        value: stats.medianSession == null
-            ? const Text('—')
-            : AnimatedCount(stats.medianSession!),
-        footnote: 'typical (median) words',
-      ),
-    ];
-    return LayoutBuilder(
-      builder: (context, box) {
-        final w = (box.maxWidth - 8) / 2;
-        return Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [for (final t in tiles) SizedBox(width: w, child: t)],
-        );
-      },
     );
   }
 }
 
-class _BestsCard extends StatelessWidget {
-  const _BestsCard({required this.bests});
+class _Bests extends StatelessWidget {
+  const _Bests({required this.bests});
   final PersonalBests bests;
 
   @override
@@ -395,7 +382,7 @@ class _BestsCard extends StatelessWidget {
           '${fmtInt(s.pace!)} w/h · ${s.kind.label}',
         ),
     ];
-    return SectionCard(
+    return Section(
       title: 'Personal bests',
       child: Column(
         children: [
