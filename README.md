@@ -113,7 +113,7 @@ debug APK, and you can download it from the
 2. **When the timer ends**, enter how many words you wrote, or press **Save
    time only** if you were editing. Breaks start on their own after that,
    and you can turn this off in Settings.
-3. **Set your daily goal** on the **Goal** tab by tapping the goal card. Each
+3. **Set your daily goal** on the **Goal** tab by tapping the goal number. Each
    day is shaded by how close you came to it.
 4. **Wrote away from the app?** Press **Log words** on any tab, or tap a day
    on the calendar.
@@ -139,12 +139,14 @@ Inkwood is meant to feel like writing in an oak cabin at night.
   reading and labels because its rounded letters are easy to read.
   [Literata](https://fonts.google.com/specimen/Literata), the calm serif
   Google designed for reading in Play Books, is used for headings and big
-  numbers. Both are bundled with the
-  app, so it works offline.
+  numbers. Both are bundled with the app, so it works offline.
+- **Layout.** Nothing is boxed in cards. Each section sits directly on the
+  dark background: a title, the content, then a thin divider before the next
+  section. Key numbers sit side by side in a row split by thin vertical lines,
+  so you can take them in at a glance.
 - **Components.** Inkwood uses Flutter's stock Material 3 widgets and keeps
-  their default styling: filled and outlined cards, filter chips, segmented
-  buttons, collapsing top app bars, M3 menus and the 2024 progress
-  indicators.
+  their default styling: filter chips, segmented buttons, tonal buttons,
+  collapsing top app bars, M3 menus and the 2024 progress indicators.
 - **Motion.** Animations use Material's own timings and easing curves.
   Screens fade into each other, numbers count up, charts grow from zero and
   calendar days settle into place. All of it switches off when the system
@@ -172,7 +174,7 @@ lib/
 ├── screens/                Write, Goal, Stats, Settings and the tab shell
 ├── theme/                  Brown Material 3 scheme and theme
 ├── util/format.dart        Number, time and date helpers
-└── widgets/                Charts, sheets and shared cards
+└── widgets/                Charts, sheets, sections and number rows
 android/app/src/main/res/
 ├── raw/chime_*.wav         The two chimes
 └── drawable/               Launcher icon and status-bar icon
