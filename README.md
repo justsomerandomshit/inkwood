@@ -111,9 +111,23 @@ flutter build apk --release
 # → build/app/outputs/flutter-apk/app-release.apk
 ```
 
-The release build is signed with the debug key for now, so it's fine for your
-own phone but not for the Play Store. To publish a new version, bump
-`version` in `pubspec.yaml`, then push a tag:
+Published releases are signed with one permanent release key, so each new
+version installs over the last and keeps your data. The release workflow reads
+that key from the repository secrets `ANDROID_KEYSTORE_BASE64`,
+`ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_ALIAS`. To sign local builds with
+it too, put an `android/key.properties` file next to the keystore (it's
+git-ignored):
+
+```properties
+storeFile=/path/to/inkwood-release.jks
+storePassword=…
+keyAlias=inkwood
+keyPassword=…
+```
+
+Without that file, local release builds fall back to the debug key.
+
+To publish a new version, bump `version` in `pubspec.yaml`, then push a tag:
 
 ```bash
 git tag v0.2.0
@@ -231,7 +245,7 @@ pull request.
 - [ ] A home-screen widget showing today's words and streak
 - [ ] Projects, so words can be tracked per manuscript
 - [ ] Exporting sessions to CSV
-- [ ] A Play Store release with proper signing
+- [ ] A Play Store listing
 
 ## Contributing
 

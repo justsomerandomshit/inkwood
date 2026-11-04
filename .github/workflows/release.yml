@@ -33,6 +33,24 @@ jobs:
       - name: Run tests
         run: flutter test
 
+      - name: Set up the release signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::ANDROID_KEYSTORE_BASE64 is not set; refusing to publish an APK signed with a throwaway key."
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/release.jks
+          cat > android/key.properties <<EOF
+          storeFile=release.jks
+          storePassword=$KEYSTORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          keyPassword=$KEYSTORE_PASSWORD
+          EOF
+
       - name: Build release APK
         run: flutter build apk --release
 
@@ -41,5 +59,6 @@ jobs:
 
       - uses: softprops/action-gh-release@v2
         with:
+          name: Inkwood ${{ github.ref_name }}
           files: inkwood-${{ github.ref_name }}.apk
           generate_release_notes: true
