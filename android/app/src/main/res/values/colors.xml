@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Walnut: matches the app's dark surface so launch never flashes white. -->
+    <color name="inkwood_surface">#1C130E</color>
+    <!-- Oak: launcher icon background and notification accent. -->
+    <color name="inkwood_oak">#5A3A24</color>
+    <color name="inkwood_tan">#D9B48F</color>
+</resources>
