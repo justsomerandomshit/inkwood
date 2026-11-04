@@ -36,7 +36,7 @@ Future<WritingStore> pumpApp(
 
 Future<void> loadFonts() async {
   for (final (family, files) in [
-    ('Fraunces', ['Fraunces-Regular', 'Fraunces-SemiBold']),
+    ('Literata', ['Literata-Regular', 'Literata-SemiBold']),
     ('Nunito', ['Nunito-Regular', 'Nunito-SemiBold', 'Nunito-Bold']),
     ('MaterialIcons', <String>[]),
   ]) {

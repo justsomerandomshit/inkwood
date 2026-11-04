@@ -13,7 +13,7 @@ import 'theme/app_theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   LicenseRegistry.addLicense(() async* {
-    for (final font in ['Fraunces', 'Nunito']) {
+    for (final font in ['Literata', 'Nunito']) {
       final text = await rootBundle.loadString('assets/fonts/OFL-$font.txt');
       yield LicenseEntryWithLineBreaks([font], text);
     }

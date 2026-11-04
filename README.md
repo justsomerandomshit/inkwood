@@ -137,8 +137,9 @@ Inkwood is meant to feel like writing in an oak cabin at night.
   readers. Red and green never appear to mean "failed" or "done".
 - **Type.** [Nunito](https://fonts.google.com/specimen/Nunito) is used for
   reading and labels because its rounded letters are easy to read.
-  [Fraunces](https://fonts.google.com/specimen/Fraunces), a soft, bookish
-  serif, is used for headings and big numbers. Both are bundled with the
+  [Literata](https://fonts.google.com/specimen/Literata), the calm serif
+  Google designed for reading in Play Books, is used for headings and big
+  numbers. Both are bundled with the
   app, so it works offline.
 - **Components.** Inkwood uses Flutter's stock Material 3 widgets and keeps
   their default styling: filled and outlined cards, filter chips, segmented
@@ -220,7 +221,7 @@ the design rules above: dark brown only, and stock Material 3 components.
 ## License and credits
 
 - **Code.** [MIT](LICENSE).
-- **Fonts.** Fraunces and Nunito are licensed under the
+- **Fonts.** Literata and Nunito are licensed under the
   [SIL Open Font License 1.1](assets/fonts). Their licence texts are also
   shown on the in-app licences page.
 - **Icons.** The pen icon is Material Icons' "edit" glyph (Apache 2.0).

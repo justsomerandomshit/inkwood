@@ -180,7 +180,7 @@ class SettingsScreen extends StatelessWidget {
             leading: const Icon(Icons.forest_outlined),
             title: const Text('Inkwood'),
             subtitle: const Text(
-              'A quiet cabin for your words. Fonts: Fraunces & Nunito (SIL OFL).',
+              'A quiet cabin for your words. Fonts: Literata & Nunito (SIL OFL).',
             ),
             onTap: () =>
                 showLicensePage(context: context, applicationName: 'Inkwood'),

@@ -54,7 +54,8 @@ ThemeData buildTheme() {
   );
 
   // Type: Nunito (rounded humanist sans, very readable) for the M3 type scale;
-  // Fraunces (soft old-style serif) only for display/headline roles — the M3
+  // Literata (calm reading serif, made for Google Play Books) only for
+  // display/headline roles — the M3
   // "brand typeface for expressive moments" pattern.
   final plain = base.textTheme.apply(
     fontFamily: 'Nunito',
@@ -62,7 +63,7 @@ ThemeData buildTheme() {
     displayColor: scheme.onSurface,
   );
   TextStyle? brand(TextStyle? s) =>
-      s?.copyWith(fontFamily: 'Fraunces', fontWeight: FontWeight.w600);
+      s?.copyWith(fontFamily: 'Literata', fontWeight: FontWeight.w600);
   final text = plain.copyWith(
     displayLarge: brand(plain.displayLarge),
     displayMedium: brand(plain.displayMedium),
