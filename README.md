@@ -28,6 +28,7 @@
 
 - [Why Inkwood](#why-inkwood)
 - [Features](#features)
+- [Download](#download)
 - [Getting started](#getting-started)
 - [How to use it](#how-to-use-it)
 - [Design](#design)
@@ -76,6 +77,16 @@ you. Everything stays on your phone.
 - **Screen stays on.** The screen stays awake while a timer runs, and you can turn that off.
 - **Reduced motion.** Animations are respected or switched off when the system asks for reduced motion.
 
+## Download
+
+Get the latest APK from the
+[Releases page](https://github.com/justsomerandomshit/inkwood/releases/latest).
+Open it on your phone and allow installing from your browser or file manager
+when Android asks. Inkwood needs Android 8.0 or newer.
+
+New versions are published automatically: pushing a version tag such as
+`v0.2.0` builds the APK and attaches it to a new release.
+
 ## Getting started
 
 ### Requirements
@@ -101,9 +112,16 @@ flutter build apk --release
 ```
 
 The release build is signed with the debug key for now, so it's fine for your
-own phone but not for the Play Store. Every push to `main` also builds a
-debug APK, and you can download it from the
-[Actions](https://github.com/justsomerandomshit/inkwood/actions/workflows/ci.yml) tab.
+own phone but not for the Play Store. To publish a new version, bump
+`version` in `pubspec.yaml`, then push a tag:
+
+```bash
+git tag v0.2.0
+git push origin v0.2.0   # builds the APK and creates the GitHub Release
+```
+
+Every push to `main` also builds a debug APK, and you can download it from
+the [Actions](https://github.com/justsomerandomshit/inkwood/actions/workflows/ci.yml) tab.
 
 ## How to use it
 
