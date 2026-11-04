@@ -131,8 +131,9 @@ the [Actions](https://github.com/justsomerandomshit/inkwood/actions/workflows/ci
 2. **When the timer ends**, enter how many words you wrote, or press **Save
    time only** if you were editing. Breaks start on their own after that,
    and you can turn this off in Settings.
-3. **Set your daily goal** on the **Goal** tab by tapping the goal number. Each
-   day is shaded by how close you came to it.
+3. **Set your daily goal** on the **Goal** tab by tapping the goal number. It
+   applies to every day of the current month (earlier months keep theirs), and
+   each day is shaded by how close you came to it.
 4. **Wrote away from the app?** Press **Log words** on any tab, or tap a day
    on the calendar.
 5. **See how you're doing** on the **Stats** tab, and switch between week,

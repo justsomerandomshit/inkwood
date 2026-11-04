@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:inkwood/data/stats.dart';
 import 'package:inkwood/data/writing_store.dart';
 import 'package:inkwood/models/models.dart';
@@ -55,12 +57,36 @@ void main() {
     expect(s.isBeforeFreshStart(addDays(dayOf(now), -1)), isTrue);
   });
 
-  test('goal changes only apply from today', () {
+  test('goal changes cover the whole current month, not earlier ones', () {
     final s = make();
     s.setGoal(1000);
+    final monthStart = DateTime(now.year, now.month);
     expect(s.goalFor(dayOf(now)), 1000);
-    expect(s.goalFor(addDays(dayOf(now), -1)), WritingStore.defaultGoal);
+    expect(s.goalFor(monthStart), 1000);
+    expect(s.goalFor(addDays(monthStart, -1)), WritingStore.defaultGoal);
+    s.setGoal(800);
+    expect(s.goalFor(monthStart), 800);
+    expect(s.goalFor(addDays(monthStart, -1)), WritingStore.defaultGoal);
   });
+
+  test(
+    'goals saved mid-month by older versions cover the whole month',
+    () async {
+      final monthStart = DateTime(now.year, now.month);
+      await prefs.setString(
+        'inkwood.state.v1',
+        jsonEncode({
+          'goals': [
+            GoalEntry(DateTime(2000), 500).toJson(),
+            GoalEntry(addDays(monthStart, 2), 2500).toJson(),
+          ],
+        }),
+      );
+      final s = make();
+      expect(s.goalFor(monthStart), 2500);
+      expect(s.goalFor(addDays(monthStart, -1)), 500);
+    },
+  );
 
   test('done mark meets the goal regardless of words', () {
     final s = make();

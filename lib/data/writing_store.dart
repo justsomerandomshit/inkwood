@@ -186,14 +186,26 @@ class WritingStore extends ChangeNotifier {
     _changed();
   }
 
-  /// Sets the daily goal from today onward; earlier days keep their goal.
+  /// Sets the daily goal for the whole of the current month and onward;
+  /// earlier months keep the goal they had.
   void setGoal(int words) {
-    final t = today;
+    final from = DateTime(today.year, today.month);
     _goals = [
-      ..._goals.where((g) => g.from.isBefore(t)),
-      GoalEntry(t, max(1, words)),
+      ..._goals.where((g) => g.from.isBefore(from)),
+      GoalEntry(from, max(1, words)),
     ];
     _changed();
+  }
+
+  /// Goals change per month: older saves started a goal mid-month, so snap
+  /// each entry to the first of its month (the last one set in a month wins).
+  static List<GoalEntry> _byMonth(List<GoalEntry> goals) {
+    final byMonth = <DateTime, int>{};
+    for (final g in goals) {
+      byMonth[DateTime(g.from.year, g.from.month)] = g.words;
+    }
+    final months = byMonth.keys.toList()..sort();
+    return [for (final m in months) GoalEntry(m, byMonth[m]!)];
   }
 
   void setMark(DateTime day, DayMark? mark) {
@@ -364,7 +376,9 @@ class WritingStore extends ChangeNotifier {
     final goals = (j['goals'] as List? ?? [])
         .map((e) => GoalEntry.fromJson(e as Map<String, dynamic>))
         .toList();
-    _goals = goals.isEmpty ? [GoalEntry(DateTime(2000), defaultGoal)] : goals;
+    _goals = goals.isEmpty
+        ? [GoalEntry(DateTime(2000), defaultGoal)]
+        : _byMonth(goals);
     _marks
       ..clear()
       ..addAll(

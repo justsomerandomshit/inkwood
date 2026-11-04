@@ -84,6 +84,12 @@ ThemeData buildTheme() {
     textTheme: text,
     extensions: [CozyColors(heat: BrownScheme.heat(scheme))],
     cardTheme: const CardThemeData(margin: EdgeInsets.zero),
+    // Keep app bars the same brown as the page when content scrolls under
+    // them, instead of M3's lighter "scrolled under" container colour.
+    appBarTheme: AppBarTheme(
+      backgroundColor: scheme.surface,
+      scrolledUnderElevation: 0,
+    ),
     bottomSheetTheme: const BottomSheetThemeData(showDragHandle: true),
     snackBarTheme: const SnackBarThemeData(behavior: SnackBarBehavior.floating),
     inputDecorationTheme: const InputDecorationTheme(filled: true),

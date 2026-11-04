@@ -67,7 +67,8 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
           children: [
             const Text(
               'Pick something you can hit on an ordinary day. '
-              'Past days keep the goal they had.',
+              'It applies to every day this month; earlier months keep '
+              'the goal they had.',
             ),
             const SizedBox(height: 16),
             TextField(
